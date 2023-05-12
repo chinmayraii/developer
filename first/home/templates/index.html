@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+</head>
+<body>
+    <h1>Chatbot</h1>
+    <div id="chat"></div>
+    <form>
+        <input type="text" id="input" autocomplete="off">
+        <button type="submit">Send</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/@openai/api@0.6.0/dist/index.js"></script>
+    <script>
+        const apikey = "YOUR_API_KEY";
+        const engine = "davinci";
+
+        const chatDiv = document.getElementById("chat");
+        const form = document.querySelector("form");
+        const input = document.getElementById("input");
+
+        const chatbot = new OpenAI(apikey);
+
+        function addMessage(text) {
+            const message = document.createElement("p");
+            message.innerHTML = text;
+            chatDiv.appendChild(message);
+        }
+
+        async function sendMessage(text) {
+            addMessage(`<strong>You:</strong> ${text}`);
+
+            const response = await chatbot.complete({
+                engine,
+                prompt: text,
+                maxTokens: 50,
+                n: 1,
+                stop: "\n",
+                temperature: 0.7
+            });
+
+            const message = response.choices[0].text.trim();
+            addMessage(`<strong>Chatbot:</strong> ${message}`);
+        }
+
+        form.addEventListener("submit", e => {
+            e.preventDefault();
+            const text = input.value;
+            input.value = "";
+            sendMessage(text);
+        });
+    </script>
+</body>
+</html>
